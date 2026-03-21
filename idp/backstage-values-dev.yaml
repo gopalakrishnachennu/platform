@@ -43,6 +43,11 @@ backstage:
     catalog:
       locations:
         - type: url
-          target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
-        - type: url
           target: https://github.com/gopalakrishnachennu/platform/blob/main/templates/all.yaml
+          rules:
+            - allow: [Location, Template]
+
+    integrations:
+      github:
+        - host: github.com
+          token: ${GITHUB_TOKEN}
