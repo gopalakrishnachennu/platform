@@ -1,9 +1,10 @@
+# GENERATED — do not edit by hand. CI overwrites from Terraform outputs on every infra run.
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: platform-runtime-config
 data:
-  GCP_STORAGE_BUCKET: "cgk-999"
-  GCP_STORAGE_BUCKETS: "cgk-999,sai-99,raghu"
+  GCP_STORAGE_BUCKET: ""
+  GCP_STORAGE_BUCKETS: ""
   GCP_VPC_NAME: ""
   GCP_SUBNET_NAME: ""

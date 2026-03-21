@@ -91,7 +91,9 @@ kubectl patch application platform-api-dev -n gitops --type merge \
   -p '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}'
 ```
 
-**If a bucket exists in GCP but not in Argo:** Argo does **not** read the GCP Console. Add (or merge) Terraform under `infra/gcp-storage/<name>/` in this repo so CI can run `terraform output` and refresh the GitOps ConfigMaps. For a bucket already created in GCP, use a `data "google_storage_bucket"` stack (see `infra/gcp-storage/sai-99/main.tf`) or import into a managed resource.
+**If a bucket exists in GCP but not in Argo:** Argo does **not** read the GCP Console. Add Terraform under `infra/gcp-storage/<name>/` and merge to `main`. **Do not hardcode** bucket names in `gitops/` — the **Infra Terraform** workflow regenerates `gcp-bucket-nodes.yaml` and `platform-runtime-config.yaml` from **all** stacks’ `terraform output` every run.
+
+**Refresh GitOps without changing `.tf`:** GitHub → **Actions** → **Infra Terraform** → **Run workflow** (manual dispatch rebuilds the registry from state).
 
 **Also**
 

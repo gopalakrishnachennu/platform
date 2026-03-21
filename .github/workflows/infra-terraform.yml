@@ -3,12 +3,12 @@ name: Infra Terraform
 on:
   pull_request:
     paths:
-      - "infra/**/*.tf"
+      - "infra/**"
   push:
     branches:
       - main
     paths:
-      - "infra/**/*.tf"
+      - "infra/**"
   workflow_dispatch:
 
 env:
@@ -97,7 +97,7 @@ jobs:
             --location "${GCP_REGION}" \
             --uniform-bucket-level-access
 
-      - name: Terraform apply for changed infra directories
+      - name: Terraform apply + regenerate GitOps (no hardcoded bucket names)
         run: |
           set -euo pipefail
           BEFORE_SHA="${{ github.event.before }}"
@@ -106,17 +106,18 @@ jobs:
           fi
           mapfile -t TF_DIRS < <(git diff --name-only "${BEFORE_SHA}" "${GITHUB_SHA}" | awk '/^infra\/.*\.tf$/ {sub(/\/[^/]+$/, "", $0); print}' | sort -u)
           if [ "${#TF_DIRS[@]}" -eq 0 ]; then
-            echo "No changed Terraform directories in infra/."
-            exit 0
+            echo "No Terraform (.tf) file changes in this push — skipping terraform apply only."
+          else
+            for dir in "${TF_DIRS[@]}"; do
+              echo "Applying ${dir}"
+              terraform -chdir="${dir}" init -input=false \
+                -backend-config="bucket=${TF_STATE_BUCKET}" \
+                -backend-config="prefix=${dir}"
+              terraform -chdir="${dir}" apply -input=false -auto-approve
+            done
           fi
-          for dir in "${TF_DIRS[@]}"; do
-            echo "Applying ${dir}"
-            terraform -chdir="${dir}" init -input=false \
-              -backend-config="bucket=${TF_STATE_BUCKET}" \
-              -backend-config="prefix=${dir}"
-            terraform -chdir="${dir}" apply -input=false -auto-approve
-          done
 
+          # Always rebuild registry from ALL infra/gcp-storage stacks (terraform output), not hand-edited YAML.
           # Argo CD only shows Kubernetes objects — GCS buckets live in GCP. Surface *all* bucket
           # names from every infra/gcp-storage stack so platform-runtime-config is a registry.
           GCP_STORAGE_BUCKETS=""
