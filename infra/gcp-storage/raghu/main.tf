@@ -19,13 +19,9 @@ resource "google_storage_bucket" "this" {
   location                    = "us-central1"
   uniform_bucket_level_access = true
   versioning {
-
     enabled = true
-
   }
-
-  force_destroy               = false
-
+  force_destroy = false
 }
 
 output "bucket_name" {

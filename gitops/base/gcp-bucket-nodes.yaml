@@ -18,3 +18,12 @@ metadata:
     platform.dev/provisioned: gcp-storage
 data:
   bucket_name: "sai-99"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gcp-bucket-raghu
+  labels:
+    platform.dev/provisioned: gcp-storage
+data:
+  bucket_name: "raghu"
