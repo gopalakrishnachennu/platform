@@ -1,0 +1,49 @@
+# After GitOps / Argo app YAML changes land on main, update the cluster without manual kubectl.
+# Requires secrets.GCP_CREDENTIALS with permission to: gcloud container clusters get-credentials + kubectl.
+name: GitOps — apply Argo app + hard refresh
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "gitops/**"
+      - "argocd/**"
+  workflow_dispatch:
+
+env:
+  GCP_PROJECT_ID: chennu-platform
+  GKE_CLUSTER: platform-lab
+  GKE_ZONE: us-central1-a
+
+jobs:
+  sync-argocd:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout (Application manifest at this commit)
+        uses: actions/checkout@v4
+
+      - name: Auth to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure kubectl for GKE
+        run: |
+          gcloud container clusters get-credentials "${GKE_CLUSTER}" \
+            --zone "${GKE_ZONE}" \
+            --project "${GCP_PROJECT_ID}"
+
+      - name: Apply Application CR from Git (Info panel, spec changes)
+        run: kubectl apply -f argocd/dev-app.yaml
+
+      - name: Hard refresh platform-api-dev (fetch latest Git for this app)
+        run: |
+          kubectl patch application platform-api-dev -n gitops --type merge \
+            -p '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}'

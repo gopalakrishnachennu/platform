@@ -16,6 +16,12 @@ kubectl create clusterrolebinding argocd-application-controller-cluster-admin \
   --serviceaccount=gitops:argocd-application-controller \
   --dry-run=client -o yaml | kubectl apply -f -
 
+echo "==> Faster Git reconciliation (less stale UI vs GitHub)"
+# Default Argo CD can look \"stuck\" on an old commit; shorter timeout pulls Git more often.
+kubectl patch configmap argocd-cm -n gitops --type merge -p \
+  '{"data":{"timeout.reconciliation":"60s"}}' 2>/dev/null || true
+kubectl rollout restart deployment argocd-application-controller -n gitops 2>/dev/null || true
+
 echo "==> Initial ArgoCD admin password"
 kubectl -n gitops get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode
 echo
