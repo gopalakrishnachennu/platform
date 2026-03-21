@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: demo-app
-          image: us-central1-docker.pkg.dev/chennu-platform/platform-images/demo-app:94bdfd03d083f4740cd78bcae2e99d914ae2b61f
+          image: us-central1-docker.pkg.dev/chennu-platform/platform-images/demo-app:d46f00cf1f3c73579f726a02c25819243a48396c
           envFrom:
             - configMapRef:
                 name: platform-runtime-config
