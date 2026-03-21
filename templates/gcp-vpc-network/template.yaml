@@ -1,0 +1,69 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: gcp-vpc-network
+  title: GCP VPC + Subnet + Firewall (Terraform)
+  description: Generate Terraform for a custom VPC network, subnet, and baseline firewall rules.
+  tags:
+    - terraform
+    - gcp
+    - vpc
+    - network
+spec:
+  owner: user:default/guest
+  type: infrastructure
+
+  parameters:
+    - title: GCP network configuration
+      required:
+        - gcpProjectId
+        - gcpRegion
+        - networkName
+        - subnetName
+        - subnetCidr
+      properties:
+        gcpProjectId:
+          title: GCP project ID
+          type: string
+          default: chennu-platform
+        gcpRegion:
+          title: GCP region
+          type: string
+          default: us-central1
+        networkName:
+          title: VPC network name
+          type: string
+          default: platform-vpc
+          pattern: "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+        subnetName:
+          title: Subnet name
+          type: string
+          default: platform-subnet
+          pattern: "^[a-z]([-a-z0-9]*[a-z0-9])?$"
+        subnetCidr:
+          title: Subnet CIDR range
+          type: string
+          default: 10.20.0.0/24
+        sourceCidr:
+          title: Allowed source CIDR for SSH/HTTP
+          type: string
+          default: 0.0.0.0/0
+
+  steps:
+    - id: fetch-template
+      name: Generate Terraform files
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          gcpProjectId: ${{ parameters.gcpProjectId }}
+          gcpRegion: ${{ parameters.gcpRegion }}
+          networkName: ${{ parameters.networkName }}
+          subnetName: ${{ parameters.subnetName }}
+          subnetCidr: ${{ parameters.subnetCidr }}
+          sourceCidr: ${{ parameters.sourceCidr }}
+
+  output:
+    text:
+      - title: Generated
+        content: Terraform files generated for GCP VPC network. Run terraform init/plan/apply in the generated directory.

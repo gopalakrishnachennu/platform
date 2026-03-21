@@ -1,0 +1,59 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: gcp-storage-bucket
+  title: GCP Cloud Storage Bucket (Terraform)
+  description: Generate Terraform for a Google Cloud Storage bucket.
+  tags:
+    - terraform
+    - gcp
+    - cloud-storage
+spec:
+  owner: user:default/guest
+  type: infrastructure
+
+  parameters:
+    - title: Bucket configuration
+      required:
+        - gcpProjectId
+        - bucketName
+        - gcpRegion
+      properties:
+        gcpProjectId:
+          title: GCP project ID
+          type: string
+          default: chennu-platform
+        bucketName:
+          title: Cloud Storage bucket name
+          type: string
+          pattern: "^[a-z0-9.-]{3,63}$"
+        gcpRegion:
+          title: GCP region
+          type: string
+          default: us-central1
+        enableVersioning:
+          title: Enable versioning
+          type: boolean
+          default: true
+        forceDestroy:
+          title: Force destroy bucket (delete objects on destroy)
+          type: boolean
+          default: false
+
+  steps:
+    - id: fetch-template
+      name: Generate Terraform files
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          gcpProjectId: ${{ parameters.gcpProjectId }}
+          bucketName: ${{ parameters.bucketName }}
+          gcpRegion: ${{ parameters.gcpRegion }}
+          enableVersioning: ${{ parameters.enableVersioning }}
+          forceDestroy: ${{ parameters.forceDestroy }}
+
+  output:
+    text:
+      - title: Generated
+        content: Terraform files generated for GCP Cloud Storage. Run terraform init/plan/apply in the generated directory.
