@@ -9,7 +9,7 @@ spec:
   # Shown at the top of the app in Argo CD (Summary). Updated by infra Terraform CI.
   info:
     - name: GCP buckets (Terraform)
-      value: "cgk-999"
+      value: "cgk-999, sai-99"
     - name: GCP VPC
       value: "-"
     - name: GCP subnet

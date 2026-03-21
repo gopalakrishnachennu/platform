@@ -72,6 +72,8 @@ kubectl apply -f argocd/dev-app.yaml
 
 GitOps **does** sync `gitops/overlays/dev`, so **ConfigMap nodes** update on the next Argo sync without that step.
 
+**If a bucket exists in GCP but not in Argo:** Argo does **not** read the GCP Console. Add (or merge) Terraform under `infra/gcp-storage/<name>/` in this repo so CI can run `terraform output` and refresh the GitOps ConfigMaps. For a bucket already created in GCP, use a `data "google_storage_bucket"` stack (see `infra/gcp-storage/sai-99/main.tf`) or import into a managed resource.
+
 **Also**
 
 | What | Where to look |
