@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: platform-api
-          image: us-central1-docker.pkg.dev/chennu-platform/platform-images/platform-api:5051f5369b62179cb873549d81f174b3d03cba4c
+          image: us-central1-docker.pkg.dev/chennu-platform/platform-images/platform-api:25499b12d6dffdf54733499e690ce0206fb4f29b
           envFrom:
             - configMapRef:
                 name: platform-runtime-config
