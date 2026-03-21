@@ -10,19 +10,19 @@ terraform {
 }
 
 provider "google" {
-  project = "{{ values.gcpProjectId }}"
-  region  = "{{ values.gcpRegion }}"
+  project = "${{ values.gcpProjectId }}"
+  region  = "${{ values.gcpRegion }}"
 }
 
 resource "google_compute_network" "vpc" {
-  name                    = "{{ values.networkName }}"
+  name                    = "${{ values.networkName }}"
   auto_create_subnetworks = false
 }
 
 resource "google_compute_subnetwork" "subnet" {
-  name          = "{{ values.subnetName }}"
-  ip_cidr_range = "{{ values.subnetCidr }}"
-  region        = "{{ values.gcpRegion }}"
+  name          = "${{ values.subnetName }}"
+  ip_cidr_range = "${{ values.subnetCidr }}"
+  region        = "${{ values.gcpRegion }}"
   network       = google_compute_network.vpc.id
 }
 
@@ -35,7 +35,7 @@ resource "google_compute_firewall" "allow_ssh" {
     ports    = ["22"]
   }
 
-  source_ranges = ["{{ values.sourceCidr }}"]
+  source_ranges = ["${{ values.sourceCidr }}"]
 }
 
 resource "google_compute_firewall" "allow_http" {
@@ -47,7 +47,7 @@ resource "google_compute_firewall" "allow_http" {
     ports    = ["80", "443"]
   }
 
-  source_ranges = ["{{ values.sourceCidr }}"]
+  source_ranges = ["${{ values.sourceCidr }}"]
 }
 
 output "vpc_name" {

@@ -10,23 +10,14 @@ terraform {
 }
 
 provider "google" {
-  project = "{{ values.gcpProjectId }}"
-  region  = "{{ values.gcpRegion }}"
+  project = "${{ values.gcpProjectId }}"
+  region  = "${{ values.gcpRegion }}"
 }
 
 resource "google_storage_bucket" "this" {
-  name                        = "{{ values.bucketName }}"
-  location                    = "{{ values.gcpRegion }}"
+  name                        = "${{ values.bucketName }}"
+  location                    = "${{ values.gcpRegion }}"
   uniform_bucket_level_access = true
-{% if values.forceDestroy %}
-  force_destroy               = true
-{% else %}
-  force_destroy               = false
-{% endif %}
-}
-
-resource "google_storage_bucket_versioning" "this" {
-  bucket = google_storage_bucket.this.name
   versioning {
 {% if values.enableVersioning %}
     enabled = true
@@ -34,6 +25,11 @@ resource "google_storage_bucket_versioning" "this" {
     enabled = false
 {% endif %}
   }
+{% if values.forceDestroy %}
+  force_destroy               = true
+{% else %}
+  force_destroy               = false
+{% endif %}
 }
 
 output "bucket_name" {
