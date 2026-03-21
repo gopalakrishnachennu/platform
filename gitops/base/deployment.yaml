@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: demo-app
+  name: platform-api
   labels:
-    app: demo-app
+    app: platform-api
 spec:
   replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: demo-app
+      app: platform-api
   template:
     metadata:
       labels:
-        app: demo-app
+        app: platform-api
     spec:
       containers:
-        - name: demo-app
+        - name: platform-api
           image: us-central1-docker.pkg.dev/chennu-platform/platform-images/demo-app:aa8230d870699d48d519a970fae3f2d17bc9de17
           envFrom:
             - configMapRef:

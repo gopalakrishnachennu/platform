@@ -32,7 +32,7 @@ check_cmd "Kubernetes API reachable" kubectl cluster-info
 check_cmd "At least one node is Ready" bash -c "kubectl get nodes --no-headers | awk '\$2==\"Ready\"{ok=1} END{exit !ok}'"
 
 # 2) Required namespaces
-for ns in idp gitops monitoring dev staging production; do
+for ns in idp gitops monitoring dev; do
   check_cmd "Namespace exists: ${ns}" kubectl get namespace "${ns}"
 done
 
@@ -44,15 +44,13 @@ check_cmd "Prometheus statefulset ready" bash -c "kubectl get sts -n monitoring 
 check_cmd "Loki statefulset ready" bash -c "kubectl get sts -n monitoring loki -o jsonpath='{.status.readyReplicas}' | awk '\$1>=1{ok=1} END{exit !ok}'"
 
 # 4) ArgoCD app sync/health
-for app in demo-app-dev demo-app-staging demo-app-production; do
+for app in platform-api-dev; do
   check_cmd "ArgoCD app is Synced: ${app}" bash -c "[ \"\$(kubectl get app -n gitops ${app} -o jsonpath='{.status.sync.status}')\" = \"Synced\" ]"
   check_cmd "ArgoCD app is Healthy: ${app}" bash -c "[ \"\$(kubectl get app -n gitops ${app} -o jsonpath='{.status.health.status}')\" = \"Healthy\" ]"
 done
 
 # 5) Deployed app workloads
-check_cmd "Dev app available" bash -c "kubectl get deploy -n dev demo-app -o jsonpath='{.status.availableReplicas}' | awk '\$1>=1{ok=1} END{exit !ok}'"
-check_cmd "Staging app available" bash -c "kubectl get deploy -n staging demo-app -o jsonpath='{.status.availableReplicas}' | awk '\$1>=1{ok=1} END{exit !ok}'"
-check_cmd "Production app available (2 replicas expected)" bash -c "kubectl get deploy -n production demo-app -o jsonpath='{.status.availableReplicas}' | awk '\$1>=2{ok=1} END{exit !ok}'"
+check_cmd "Platform API deployment available" bash -c "kubectl get deploy -n dev platform-api -o jsonpath='{.status.availableReplicas}' | awk '\$1>=1{ok=1} END{exit !ok}'"
 
 # 6) Alert rules
 check_cmd "Custom alert rule exists (platform-alerts)" kubectl get prometheusrule -n monitoring platform-alerts

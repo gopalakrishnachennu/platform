@@ -367,7 +367,7 @@
             </div>
             <div class="badge" data-service="devapp">
               <div class="badge-head">
-                <div><span class="dot"></span><strong>Dev App</strong></div>
+                <div><span class="dot"></span><strong>Platform API</strong></div>
                 <span class="state pending">Pending</span>
               </div>
               <p>Default endpoint: <code>http://localhost:18080</code></p>
@@ -387,7 +387,7 @@
             <a class="btn primary" href="http://localhost:7007" target="_blank" rel="noreferrer">Backstage</a>
             <a class="btn primary" href="https://localhost:8080" target="_blank" rel="noreferrer">ArgoCD</a>
             <a class="btn primary" href="http://localhost:3000" target="_blank" rel="noreferrer">Grafana</a>
-            <a class="btn primary" href="http://localhost:18080" target="_blank" rel="noreferrer">Dev App</a>
+            <a class="btn primary" href="http://localhost:18080" target="_blank" rel="noreferrer">Platform API</a>
           </div>
           <div class="hint">If ArgoCD shows certificate warning, click Advanced and proceed (local lab tunnel).</div>
         </article>
@@ -477,9 +477,9 @@
         </article>
 
         <article class="card cmd">
-          <h3>Dev App Tunnel</h3>
-          <p>Open your sample app running in `dev` namespace.</p>
-          <code id="cmd-dev">kubectl port-forward svc/demo-app 18080:80 -n dev</code>
+          <h3>Platform API Tunnel</h3>
+          <p>Open the platform API service running in the `dev` namespace.</p>
+          <code id="cmd-dev">kubectl port-forward svc/platform-api 18080:80 -n dev</code>
           <div class="actions">
             <button class="btn" onclick="copyCmd('cmd-dev')">Copy command</button>
           </div>

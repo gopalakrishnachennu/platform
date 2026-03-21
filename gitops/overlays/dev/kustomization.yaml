@@ -6,7 +6,7 @@ resources:
 patches:
   - target:
       kind: Deployment
-      name: demo-app
+      name: platform-api
     patch: |-
       - op: replace
         path: /spec/replicas

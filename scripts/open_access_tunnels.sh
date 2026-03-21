@@ -8,7 +8,7 @@ tell application "Terminal"
   do script "kubectl port-forward svc/backstage 7007:7007 -n idp"
   do script "kubectl port-forward svc/argocd-server 8080:443 -n gitops"
   do script "kubectl port-forward svc/kube-prometheus-grafana 3000:80 -n monitoring"
-  do script "kubectl port-forward svc/demo-app 18080:80 -n dev"
+  do script "kubectl port-forward svc/platform-api 18080:80 -n dev"
 end tell
 EOF
 

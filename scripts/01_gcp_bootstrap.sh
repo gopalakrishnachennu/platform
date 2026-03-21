@@ -49,10 +49,10 @@ echo "==> Fetching cluster credentials"
 gcloud container clusters get-credentials "${CLUSTER_NAME}" --zone "${ZONE}"
 
 echo "==> Creating namespaces"
-for ns in idp gitops monitoring dev staging production; do
+for ns in idp gitops monitoring dev; do
   kubectl create namespace "${ns}" --dry-run=client -o yaml | kubectl apply -f -
 done
 
 echo "==> Bootstrap complete"
 kubectl get nodes
-kubectl get ns | awk '/idp|gitops|monitoring|dev|staging|production/'
+kubectl get ns | awk '/idp|gitops|monitoring|dev/'

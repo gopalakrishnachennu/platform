@@ -10,7 +10,7 @@ env:
   GCP_PROJECT_ID: chennu-platform
   GCP_REGION: us-central1
   ARTIFACT_REPO: platform-images
-  IMAGE_NAME: demo-app
+  IMAGE_NAME: platform-api
 
 jobs:
   build-and-push:
