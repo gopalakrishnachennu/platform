@@ -1,5 +1,7 @@
 # Platform Engineering Projects (Low-Cost, No Docker)
 
+**Full documentation (architecture, flows, workflows, FAQ for presentations):** [`docs/PLATFORM_DOCUMENTATION.md`](docs/PLATFORM_DOCUMENTATION.md)
+
 This repository contains a low-cost implementation path for:
 
 1. Internal Developer Platform (Backstage + Terraform)
