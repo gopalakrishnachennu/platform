@@ -3,10 +3,140 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Platform Demo App</title>
+    <title>Platform Quick Access</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 24px;
+        max-width: 920px;
+      }
+      .card {
+        border: 1px solid #6665;
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      code {
+        display: block;
+        padding: 10px;
+        border-radius: 8px;
+        background: #8882;
+        margin: 8px 0 10px;
+        overflow-x: auto;
+      }
+      button {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #6666;
+        cursor: pointer;
+      }
+      .danger {
+        border-color: #c0392b;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .small {
+        opacity: 0.8;
+        font-size: 13px;
+      }
+      #status {
+        margin-top: 8px;
+        font-size: 14px;
+      }
+    </style>
   </head>
   <body>
-    <h1>Platform Demo App</h1>
-    <p>CI and GitOps pipeline is active.</p>
+    <h1>Platform Quick Access</h1>
+    <p>Use these commands to open Backstage, ArgoCD, Grafana, and the dev app quickly.</p>
+
+    <div class="card">
+      <h3>Dashboard links (open after tunnels start)</h3>
+      <div class="row">
+        <a href="http://localhost:7007" target="_blank" rel="noreferrer">Open Backstage</a>
+        <a href="https://localhost:8080" target="_blank" rel="noreferrer">Open ArgoCD</a>
+        <a href="http://localhost:3000" target="_blank" rel="noreferrer">Open Grafana</a>
+        <a href="http://localhost:18080" target="_blank" rel="noreferrer">Open Dev App</a>
+      </div>
+      <p class="small">Start tunnels first, then these links will work.</p>
+    </div>
+
+    <div class="card">
+      <h3>One command (opens all tunnels)</h3>
+      <code id="cmd-all">bash scripts/open_access_tunnels.sh</code>
+      <div class="row">
+        <button onclick="copyCmd('cmd-all')">Copy command</button>
+      </div>
+      <p class="small">This script opens separate Terminal tabs and starts all 4 port-forwards.</p>
+    </div>
+
+    <div class="card">
+      <h3>Start cost-safe mode (recreate and reinstall)</h3>
+      <code id="cmd-start-safe">bash scripts/start_cost_safe_mode.sh</code>
+      <button onclick="copyCmd('cmd-start-safe')">Copy start-cost-safe command</button>
+      <p class="small">Recreates low-cost cluster and reinstalls IDP, ArgoCD, and observability stack.</p>
+    </div>
+
+    <div class="card">
+      <h3>Health check (single command PASS/FAIL)</h3>
+      <code id="cmd-health">bash scripts/health_check_all.sh</code>
+      <button onclick="copyCmd('cmd-health')">Copy health-check command</button>
+      <p class="small">Verifies cluster, namespaces, ArgoCD apps, workloads, and alert rules.</p>
+    </div>
+
+    <div class="card">
+      <h3>Backstage</h3>
+      <code id="cmd-backstage">kubectl port-forward svc/backstage 7007:7007 -n idp</code>
+      <button onclick="copyCmd('cmd-backstage')">Copy command</button>
+    </div>
+
+    <div class="card">
+      <h3>ArgoCD</h3>
+      <code id="cmd-argocd">kubectl port-forward svc/argocd-server 8080:443 -n gitops</code>
+      <button onclick="copyCmd('cmd-argocd')">Copy command</button>
+    </div>
+
+    <div class="card">
+      <h3>Grafana</h3>
+      <code id="cmd-grafana">kubectl port-forward svc/kube-prometheus-grafana 3000:80 -n monitoring</code>
+      <button onclick="copyCmd('cmd-grafana')">Copy command</button>
+    </div>
+
+    <div class="card">
+      <h3>Dev app test</h3>
+      <code id="cmd-dev">kubectl port-forward svc/demo-app 18080:80 -n dev</code>
+      <button onclick="copyCmd('cmd-dev')">Copy command</button>
+    </div>
+
+    <div class="card">
+      <h3>Stop GCP cost (recommended when idle)</h3>
+      <code id="cmd-stop">bash scripts/stop_gcp_costs.sh</code>
+      <div class="row">
+        <button class="danger" onclick="copyCmd('cmd-stop')">Copy stop-cost command</button>
+      </div>
+      <p class="small">
+        This deletes the GKE cluster (`platform-lab`) to stop compute charges. You can recreate later.
+      </p>
+    </div>
+
+    <p id="status" aria-live="polite"></p>
+
+    <script>
+      async function copyCmd(id) {
+        const text = document.getElementById(id).innerText.trim();
+        const status = document.getElementById("status");
+        try {
+          await navigator.clipboard.writeText(text);
+          status.textContent = "Copied: " + text;
+        } catch (err) {
+          status.textContent = "Copy failed. Please copy manually.";
+        }
+      }
+    </script>
   </body>
 </html>
