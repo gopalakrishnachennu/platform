@@ -5,6 +5,7 @@ metadata:
   namespace: gitops
 spec:
   project: default
+  revisionHistoryLimit: 5
   source:
     repoURL: https://github.com/gopalakrishnachennu/platform.git
     targetRevision: main
