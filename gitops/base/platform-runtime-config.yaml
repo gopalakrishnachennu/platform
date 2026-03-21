@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: platform-runtime-config
 data:
-  GCP_STORAGE_BUCKET: ""
+  GCP_STORAGE_BUCKET: "cgk-999"
   GCP_VPC_NAME: ""
   GCP_SUBNET_NAME: ""
