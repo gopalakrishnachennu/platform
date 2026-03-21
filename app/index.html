@@ -410,6 +410,36 @@
           </div>
         </article>
 
+        <article class="card quick">
+          <h3>Pause / Resume (Quick Copy)</h3>
+          <p>Use explicit commands when you want predictable control.</p>
+          <code id="cmd-power-pause-top">bash scripts/cluster_power.sh pause</code>
+          <div class="actions">
+            <button class="btn" onclick="copyCmd('cmd-power-pause-top')">Copy pause command</button>
+          </div>
+          <code id="cmd-power-resume-top">bash scripts/cluster_power.sh resume</code>
+          <div class="actions">
+            <button class="btn" onclick="copyCmd('cmd-power-resume-top')">Copy resume command</button>
+          </div>
+        </article>
+
+        <article class="card quick">
+          <h3>Git Push Workflow (Quick Copy)</h3>
+          <p>Use this when you modify code and want to push to GitHub quickly.</p>
+          <code id="cmd-git-add">git add .</code>
+          <div class="actions">
+            <button class="btn" onclick="copyCmd('cmd-git-add')">Copy git add</button>
+          </div>
+          <code id="cmd-git-commit">git commit -m "update project changes"</code>
+          <div class="actions">
+            <button class="btn" onclick="copyCmd('cmd-git-commit')">Copy git commit</button>
+          </div>
+          <code id="cmd-git-push">git push</code>
+          <div class="actions">
+            <button class="btn" onclick="copyCmd('cmd-git-push')">Copy git push</button>
+          </div>
+        </article>
+
         <article class="card cmd">
           <h3>Health Check</h3>
           <p>Validate namespaces, pods, ArgoCD sync, and alert rules in one run.</p>
@@ -462,6 +492,19 @@
           <div class="actions">
             <button class="btn danger" onclick="copyCmd('cmd-stop')">Copy stop-cost command</button>
           </div>
+        </article>
+
+        <article class="card">
+          <h3>Pause or Resume Cluster (One Command)</h3>
+          <p>Toggle cluster power with one command. If running, it pauses (nodes=0). If paused, it resumes (nodes=1).</p>
+          <code id="cmd-power">bash scripts/cluster_power.sh</code>
+          <div class="actions">
+            <button class="btn" onclick="copyCmd('cmd-power')">Copy toggle command</button>
+            <button class="btn" onclick="copyCmd('cmd-power-pause')">Copy pause command</button>
+            <button class="btn" onclick="copyCmd('cmd-power-resume')">Copy resume command</button>
+          </div>
+          <code id="cmd-power-pause">bash scripts/cluster_power.sh pause</code>
+          <code id="cmd-power-resume">bash scripts/cluster_power.sh resume</code>
         </article>
       </section>
     </main>

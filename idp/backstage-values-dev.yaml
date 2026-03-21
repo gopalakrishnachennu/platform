@@ -1,4 +1,8 @@
 backstage:
+  image:
+    # Pin to a stable version to avoid plugin mismatch from "latest".
+    tag: "1.36.1"
+
   appConfig:
     app:
       title: Platform Backstage
@@ -24,6 +28,17 @@ backstage:
     # Lab-only: avoid permission token checks during local demos.
     permission:
       enabled: false
+
+    # Workaround for prebuilt app plugin mismatch in latest image.
+    notifications:
+      enabled: false
+
+    techdocs:
+      builder: local
+      generator:
+        runIn: local
+      publisher:
+        type: local
 
     catalog:
       locations:
