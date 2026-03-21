@@ -7,7 +7,13 @@ helm repo add grafana https://grafana.github.io/helm-charts >/dev/null 2>&1 || t
 helm repo update
 
 if ! helm status kube-prometheus -n monitoring >/dev/null 2>&1; then
-  helm install kube-prometheus prometheus-community/kube-prometheus-stack -n monitoring
+  helm install kube-prometheus prometheus-community/kube-prometheus-stack -n monitoring \
+    -f monitoring/kube-prometheus-values.yaml
+else
+  echo "==> Upgrading kube-prometheus-stack (Grafana alerting + values)"
+  helm upgrade kube-prometheus prometheus-community/kube-prometheus-stack -n monitoring \
+    -f monitoring/kube-prometheus-values.yaml \
+    --reuse-values
 fi
 
 echo "==> Installing Loki stack"

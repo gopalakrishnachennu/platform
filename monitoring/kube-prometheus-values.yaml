@@ -1,0 +1,12 @@
+# Optional overrides for kube-prometheus-stack (Grafana).
+# Used by scripts/04_install_observability.sh — safe defaults; no secrets in git.
+#
+# PagerDuty / Slack / webhooks: configure in Grafana UI (Alerting → Contact points)
+# or extend Alertmanager via helm values — see monitoring/grafana-alerting-demo.md
+
+grafana:
+  grafana.ini:
+    unified_alerting:
+      enabled: true
+    alerting:
+      enabled: true

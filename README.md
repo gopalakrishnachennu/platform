@@ -53,6 +53,14 @@ terraform apply -var="team_namespace=team-a" -var="service_account_name=team-vie
 - ArgoCD: `https://localhost:8080`
 - Grafana: `http://localhost:3000`
 
+## Grafana alerting (PagerDuty / webhook demo)
+
+Unified alerting is enabled via `monitoring/kube-prometheus-values.yaml` when you run `scripts/04_install_observability.sh`.
+
+**Quickest demo:** Grafana → **Alerting** → **Contact points** → add **PagerDuty** (Events API v2 key) or **Webhook** (e.g. [webhook.site](https://webhook.site)) → **Test**.
+
+Full steps and optional Alertmanager routing: **`monitoring/grafana-alerting-demo.md`**.
+
 ## Platform visibility: Argo CD vs GCP
 
 **Argo CD’s resource tree** only shows **Kubernetes** objects. GCS buckets live in **GCP** (Terraform), not as native K8s resources unless you add something like Config Connector.
