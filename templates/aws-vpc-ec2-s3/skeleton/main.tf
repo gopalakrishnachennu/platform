@@ -103,9 +103,9 @@ resource "aws_instance" "app" {
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
   associate_public_ip_address = true
-{{#if values.keyPairName}}
+{% if values.keyPairName %}
   key_name                    = "{{ values.keyPairName }}"
-{{/if}}
+{% endif %}
   tags = merge(local.tags, { Name = "${local.project}-ec2" })
 }
 
@@ -117,11 +117,11 @@ resource "aws_s3_bucket" "data" {
 resource "aws_s3_bucket_versioning" "data" {
   bucket = aws_s3_bucket.data.id
   versioning_configuration {
-{{#if values.enableVersioning}}
+{% if values.enableVersioning %}
     status = "Enabled"
-{{else}}
+{% else %}
     status = "Suspended"
-{{/if}}
+{% endif %}
   }
 }
 

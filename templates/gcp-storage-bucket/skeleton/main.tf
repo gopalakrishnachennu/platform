@@ -17,21 +17,21 @@ resource "google_storage_bucket" "this" {
   name                        = "{{ values.bucketName }}"
   location                    = "{{ values.gcpRegion }}"
   uniform_bucket_level_access = true
-{{#if values.forceDestroy}}
+{% if values.forceDestroy %}
   force_destroy               = true
-{{else}}
+{% else %}
   force_destroy               = false
-{{/if}}
+{% endif %}
 }
 
 resource "google_storage_bucket_versioning" "this" {
   bucket = google_storage_bucket.this.name
   versioning {
-{{#if values.enableVersioning}}
+{% if values.enableVersioning %}
     enabled = true
-{{else}}
+{% else %}
     enabled = false
-{{/if}}
+{% endif %}
   }
 }
 

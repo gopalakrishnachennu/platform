@@ -1,32 +1,35 @@
 terraform {
   required_version = ">= 1.4.0"
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
+    google = {
+      source  = "hashicorp/google"
       version = "~> 5.0"
     }
   }
 }
 
-provider "aws" {
-  region = "{{ values.awsRegion }}"
+provider "google" {
+  project = "{{ values.gcpProjectId }}"
+  region  = "{{ values.gcpRegion }}"
 }
 
-resource "aws_s3_bucket" "this" {
-  bucket = "{{ values.bucketName }}"
+resource "google_storage_bucket" "this" {
+  name                        = "{{ values.bucketName }}"
+  location                    = "{{ values.gcpRegion }}"
+  uniform_bucket_level_access = true
 }
 
-resource "aws_s3_bucket_versioning" "this" {
-  bucket = aws_s3_bucket.this.id
-  versioning_configuration {
-{{#if values.enableVersioning}}
-    status = "Enabled"
-{{else}}
-    status = "Suspended"
-{{/if}}
+resource "google_storage_bucket_versioning" "this" {
+  bucket = google_storage_bucket.this.name
+  versioning {
+{% if values.enableVersioning %}
+    enabled = true
+{% else %}
+    enabled = false
+{% endif %}
   }
 }
 
 output "bucket_name" {
-  value = aws_s3_bucket.this.bucket
+  value = google_storage_bucket.this.name
 }
