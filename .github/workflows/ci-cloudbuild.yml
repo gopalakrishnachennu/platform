@@ -34,7 +34,20 @@ jobs:
       - name: Build and push image with Cloud Build (no local Docker)
         run: |
           IMAGE_URI="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${ARTIFACT_REPO}/${IMAGE_NAME}:${GITHUB_SHA}"
-          gcloud builds submit --tag "${IMAGE_URI}" .
+          BUILD_ID="$(gcloud builds submit --tag "${IMAGE_URI}" --async --format='value(metadata.build.id)' .)"
+          echo "Started Cloud Build: ${BUILD_ID}"
+          while true; do
+            STATUS="$(gcloud builds describe "${BUILD_ID}" --format='value(status)')"
+            echo "Cloud Build status: ${STATUS}"
+            if [ "${STATUS}" = "SUCCESS" ]; then
+              break
+            fi
+            if [ "${STATUS}" = "FAILURE" ] || [ "${STATUS}" = "INTERNAL_ERROR" ] || [ "${STATUS}" = "TIMEOUT" ] || [ "${STATUS}" = "CANCELLED" ] || [ "${STATUS}" = "EXPIRED" ]; then
+              echo "Cloud Build failed with status: ${STATUS}"
+              exit 1
+            fi
+            sleep 10
+          done
           echo "IMAGE_URI=${IMAGE_URI}" >> "$GITHUB_ENV"
 
       - name: Patch image tag for dev overlay
