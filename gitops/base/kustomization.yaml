@@ -2,3 +2,4 @@ resources:
   - deployment.yaml
   - service.yaml
   - platform-runtime-config.yaml
+  - gcp-bucket-nodes.yaml

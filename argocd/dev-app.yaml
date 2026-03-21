@@ -6,6 +6,14 @@ metadata:
 spec:
   project: default
   revisionHistoryLimit: 5
+  # Shown at the top of the app in Argo CD (Summary). Updated by infra Terraform CI.
+  info:
+    - name: GCP buckets (Terraform)
+      value: "cgk-999"
+    - name: GCP VPC
+      value: "-"
+    - name: GCP subnet
+      value: "-"
   source:
     repoURL: https://github.com/gopalakrishnachennu/platform.git
     targetRevision: main

@@ -4,5 +4,6 @@ metadata:
   name: platform-runtime-config
 data:
   GCP_STORAGE_BUCKET: "cgk-999"
+  GCP_STORAGE_BUCKETS: "cgk-999"
   GCP_VPC_NAME: ""
   GCP_SUBNET_NAME: ""
