@@ -1,0 +1,33 @@
+backstage:
+  appConfig:
+    app:
+      title: Platform Backstage
+      baseUrl: http://localhost:7007
+
+    backend:
+      baseUrl: http://localhost:7007
+      cors:
+        origin: http://localhost:7007
+        methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+        credentials: true
+      auth:
+        keys:
+          - secret: insecure-dev-key-change-me
+        # Lab-only: allows backend APIs without strict auth policy.
+        dangerouslyDisableDefaultAuthPolicy: true
+
+    auth:
+      environment: development
+      providers:
+        guest: {}
+
+    # Lab-only: avoid permission token checks during local demos.
+    permission:
+      enabled: false
+
+    catalog:
+      locations:
+        - type: url
+          target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
+        - type: url
+          target: https://github.com/gopalakrishnachennu/platform/blob/main/templates/all.yaml

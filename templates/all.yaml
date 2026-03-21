@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: platform-template-locations
+  description: Backstage template locations for platform repo.
+spec:
+  type: url
+  targets:
+    - https://github.com/gopalakrishnachennu/platform/blob/main/templates/aws-vpc-ec2-s3/template.yaml
+    - https://github.com/gopalakrishnachennu/platform/blob/main/templates/aws-s3-bucket/template.yaml

@@ -1,0 +1,48 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: aws-s3-bucket
+  title: AWS S3 Bucket (Terraform)
+  description: Generate Terraform for a simple S3 bucket.
+  tags:
+    - terraform
+    - aws
+    - s3
+spec:
+  owner: user:default/guest
+  type: infrastructure
+
+  parameters:
+    - title: Bucket configuration
+      required:
+        - bucketName
+        - awsRegion
+      properties:
+        bucketName:
+          title: S3 bucket name
+          type: string
+          pattern: "^[a-z0-9.-]{3,63}$"
+        awsRegion:
+          title: AWS region
+          type: string
+          default: us-east-1
+        enableVersioning:
+          title: Enable versioning
+          type: boolean
+          default: true
+
+  steps:
+    - id: fetch-template
+      name: Generate Terraform files
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          bucketName: ${{ parameters.bucketName }}
+          awsRegion: ${{ parameters.awsRegion }}
+          enableVersioning: ${{ parameters.enableVersioning }}
+
+  output:
+    text:
+      - title: Generated
+        content: Terraform files generated. Run terraform init/plan/apply in the generated directory.

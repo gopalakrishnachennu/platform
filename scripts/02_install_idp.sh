@@ -6,7 +6,9 @@ helm repo add backstage https://backstage.github.io/charts >/dev/null 2>&1 || tr
 helm repo update
 
 if ! helm status backstage -n idp >/dev/null 2>&1; then
-  helm install backstage backstage/backstage -n idp
+  helm install backstage backstage/backstage -n idp -f idp/backstage-values-dev.yaml
+else
+  helm upgrade backstage backstage/backstage -n idp -f idp/backstage-values-dev.yaml
 fi
 
 echo "==> Waiting for Backstage rollout"
