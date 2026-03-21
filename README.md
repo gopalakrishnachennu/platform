@@ -93,7 +93,9 @@ kubectl patch application platform-api-dev -n gitops --type merge \
 
 **If a bucket exists in GCP but not in Argo:** Argo does **not** read the GCP Console. Add Terraform under `infra/gcp-storage/<name>/` and merge to `main`. **Do not hardcode** bucket names in `gitops/` — the **Infra Terraform** workflow regenerates `gcp-bucket-nodes.yaml` and `platform-runtime-config.yaml` from **all** stacks’ `terraform output` every run.
 
-**Refresh GitOps without changing `.tf`:** GitHub → **Actions** → **Infra Terraform** → **Run workflow** (manual dispatch rebuilds the registry from state).
+**Refresh GitOps without changing `.tf`:** GitHub → **Actions** → **Infra Terraform** → **Run workflow** (optional). After every infra run on `main`, the **same** workflow now **auto-applies** `argocd/dev-app.yaml` and **hard-refreshes** the app in-cluster so Argo matches Git **without** manual kubectl.
+
+**Reality check:** Argo cannot subscribe to “GCP events.” Provisioning must flow **Terraform → Git (CI) → Argo** (fully automated in this repo when you merge infra to `main`). Creating resources **only** in the GCP UI will **not** appear in Argo.
 
 **Also**
 
