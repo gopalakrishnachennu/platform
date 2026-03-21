@@ -70,7 +70,7 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - name: Checkout
@@ -100,6 +100,9 @@ jobs:
       - name: Terraform apply for changed infra directories
         run: |
           set -euo pipefail
+          STORAGE_BUCKET=""
+          VPC_NAME=""
+          SUBNET_NAME=""
           BEFORE_SHA="${{ github.event.before }}"
           if [ -z "${BEFORE_SHA}" ] || [ "${BEFORE_SHA}" = "0000000000000000000000000000000000000000" ]; then
             BEFORE_SHA="$(git rev-list --max-count=1 HEAD^)"
@@ -115,4 +118,36 @@ jobs:
               -backend-config="bucket=${TF_STATE_BUCKET}" \
               -backend-config="prefix=${dir}"
             terraform -chdir="${dir}" apply -input=false -auto-approve
+
+            if [[ "${dir}" == infra/gcp-storage/* ]]; then
+              STORAGE_BUCKET="$(terraform -chdir="${dir}" output -raw bucket_name)"
+            fi
+            if [[ "${dir}" == infra/gcp-vpc/* ]]; then
+              VPC_NAME="$(terraform -chdir="${dir}" output -raw vpc_name)"
+              SUBNET_NAME="$(terraform -chdir="${dir}" output -raw subnet_name)"
+            fi
           done
+
+          cat > gitops/base/platform-runtime-config.yaml <<EOF
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: platform-runtime-config
+          data:
+            GCP_STORAGE_BUCKET: "${STORAGE_BUCKET}"
+            GCP_VPC_NAME: "${VPC_NAME}"
+            GCP_SUBNET_NAME: "${SUBNET_NAME}"
+          EOF
+
+      - name: Commit runtime config for ArgoCD sync
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- gitops/base/platform-runtime-config.yaml; then
+            echo "No runtime config changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gitops/base/platform-runtime-config.yaml
+          git commit -m "chore: sync infra outputs to gitops runtime config"
+          git push

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platform-runtime-config
+data:
+  GCP_STORAGE_BUCKET: ""
+  GCP_VPC_NAME: ""
+  GCP_SUBNET_NAME: ""
