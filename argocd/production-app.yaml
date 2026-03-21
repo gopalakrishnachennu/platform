@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app-production
+  namespace: gitops
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gopalakrishnachennu/platform.git
+    targetRevision: main
+    path: gitops/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
