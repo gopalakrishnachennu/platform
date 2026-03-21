@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: demo-app
-          image: us-central1-docker.pkg.dev/chennu-platform/platform-images/demo-app:cbd916c50cb904c19d346a8cb3156283503e2fed
+          image: us-central1-docker.pkg.dev/chennu-platform/platform-images/demo-app:fc11b7e9731fffe3941302ce2ddb76e5cf125a6d
           ports:
             - containerPort: 8080
           resources:
