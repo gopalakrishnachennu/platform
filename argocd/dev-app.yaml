@@ -6,10 +6,9 @@ metadata:
 spec:
   project: default
   revisionHistoryLimit: 5
-  # Shown at the top of the app in Argo CD (Summary). Updated by infra Terraform CI.
   info:
-    - name: GCP buckets (Terraform)
-      value: "(synced by infra CI — not hardcoded)"
+    - name: GCP buckets
+      value: "-"
     - name: GCP VPC
       value: "-"
     - name: GCP subnet

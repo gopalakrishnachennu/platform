@@ -1,53 +1,37 @@
 backstage:
   image:
-    # Pin to a stable version to avoid plugin mismatch from "latest".
     tag: "1.36.1"
 
   appConfig:
     app:
       title: Platform Backstage
-      # Set to your Ingress / LB URL (cloud). Do not use localhost in production.
-      baseUrl: https://backstage.CHANGE_ME.example.com
-
+      baseUrl: ""
     backend:
-      baseUrl: https://backstage.CHANGE_ME.example.com
+      baseUrl: ""
       cors:
-        origin: https://backstage.CHANGE_ME.example.com
+        origin: ""
         methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
         credentials: true
       auth:
         keys:
           - secret: insecure-dev-key-change-me
-        # Lab-only: allows backend APIs without strict auth policy.
         dangerouslyDisableDefaultAuthPolicy: true
-
     auth:
       environment: development
       providers:
         guest: {}
-
-    # Lab-only: avoid permission token checks during local demos.
     permission:
       enabled: false
-
-    # Workaround for prebuilt app plugin mismatch in latest image.
     notifications:
       enabled: false
-
     techdocs:
       builder: local
       generator:
         runIn: local
       publisher:
         type: local
-
     catalog:
-      locations:
-        - type: url
-          target: https://github.com/gopalakrishnachennu/platform/blob/main/templates/all.yaml
-          rules:
-            - allow: [Location, Template]
-
+      locations: []
     integrations:
       github:
         - host: github.com

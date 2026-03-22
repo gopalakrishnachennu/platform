@@ -1,4 +1,3 @@
-# GCS buckets (Terraform)
+# Terraform: GCS
 
-- One directory per stack: `infra/gcp-storage/<name>/` with `output "bucket_name"`.
-- CI on `main` regenerates GitOps; **do not** hand-edit bucket ConfigMaps.
+Stacks live under `*/main.tf` with `output "bucket_name"`. Created by the IDP template via PR; CI regenerates GitOps after merge.

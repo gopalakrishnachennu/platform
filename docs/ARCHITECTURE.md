@@ -1,46 +1,42 @@
-# Platform architecture (cloud-only)
+# Architecture
 
-Everything runs in **Google Cloud** and **GitHub**. No laptop scripts are required for normal operation.
-
-## Layers
+## Provisioning flow (IDP → GCP → Argo CD)
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  GitHub (source + automation)                                │
-│  • Code, GitOps manifests, Terraform                         │
-│  • Actions: build image, apply infra, refresh Argo           │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ push / merge
-┌──────────────────────────▼──────────────────────────────────┐
-│  Google Cloud                                                │
-│  • GKE — workloads                                           │
-│  • Artifact Registry + Cloud Build — container images        │
-│  • GCS — Terraform state + buckets                           │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────────────┐
-│  GKE namespaces                                              │
-│  dev          → platform-api (GitOps)                        │
-│  gitops       → Argo CD                                      │
-│  monitoring   → Prometheus / Grafana / Loki                  │
-│  idp          → Backstage (optional)                         │
-└─────────────────────────────────────────────────────────────┘
+Backstage (IDP)
+    → Software Template opens a PR with Terraform under infra/
+    → Review & merge to main
+    → GitHub Actions: terraform apply in GCP, then regenerate GitOps manifests from terraform output
+    → Bot commits updated YAML to the same repo
+    → Argo CD syncs gitops/overlays/dev
+    → You see workloads + generated ConfigMaps + Application info in Argo CD
 ```
 
-## Flows
+**Visibility:** Argo CD shows **Kubernetes objects from Git**. Terraform outputs (bucket names, VPC fields) are written into ConfigMaps and `Application.spec.info` by CI so the UI reflects what was provisioned in GCP.
 
-| Flow | What happens |
+**Constraint:** Argo does not call the GCP API. If something exists only in the console and not in this repo, it will not appear in Argo.
+
+## Components
+
+| Layer | Role |
+|-------|------|
+| IDP | Backstage templates in `templates/` — PR with `infra/...` |
+| GCP | Resources created by Terraform; state in GCS |
+| GitHub | Source of truth; Actions run build + Terraform + Git writes |
+| GKE | Argo CD, runtime app, optional Backstage |
+| GitOps | `gitops/` — Argo Application watches `gitops/overlays/dev` |
+
+## Workflows
+
+| File | When it runs |
 |------|----------------|
-| **App deploy** | Push `main` → Cloud Build builds image → bot updates `gitops/base/deployment.yaml` → Argo syncs to `dev`. |
-| **Infra** | Change `infra/**` on `main` → Terraform apply → bot regenerates GitOps + Argo Application metadata → **argocd-sync** job updates cluster. |
-| **Templates** | Backstage (in cluster) opens PRs with Terraform; merge triggers same pipeline. |
+| `ci-cloudbuild.yml` | Push to `main` — image build, deployment manifest update |
+| `infra-terraform.yml` | Changes under `infra/` — apply, regenerate GitOps, Argo sync job |
+| `gitops-argoc-refresh.yml` | Changes under `gitops/` or `argocd/` without touching `infra/` |
 
-## What Argo CD does
+## Operator setup
 
-- Watches **Git** (`gitops/overlays/dev`). It does **not** read the GCP API for buckets.
-- Bucket names appear in GitOps **only** after Terraform outputs are written by CI.
-
-## Related docs
-
-- `OPERATIONS.md` — how to run one-time installs (Cloud Shell, not your laptop).
-- `../README.md` — repo entry point.
+- GitHub secret **`GCP_CREDENTIALS`** (service account with Cloud Build, GCS state, GKE, Terraform).
+- One-time: install Argo CD, optional observability and Backstage on the cluster (Cloud Shell + `kubectl`/`helm`), then apply `argocd/dev-app.yaml`.
+- Set workflow `env` (project, cluster, zone) to match your GCP project.
+- Configure `idp/backstage-values-dev.yaml` for your Backstage URL and catalog Git location before installing Backstage.

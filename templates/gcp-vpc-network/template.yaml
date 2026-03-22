@@ -22,11 +22,9 @@ spec:
         repoOwner:
           title: GitHub owner
           type: string
-          default: gopalakrishnachennu
         repoName:
           title: GitHub repository
           type: string
-          default: platform
     - title: GCP network configuration
       required:
         - gcpProjectId
@@ -34,33 +32,28 @@ spec:
         - networkName
         - subnetName
         - subnetCidr
+        - sourceCidr
       properties:
         gcpProjectId:
           title: GCP project ID
           type: string
-          default: chennu-platform
         gcpRegion:
           title: GCP region
           type: string
-          default: us-central1
         networkName:
           title: VPC network name
           type: string
-          default: platform-vpc
           pattern: "^[a-z]([-a-z0-9]*[a-z0-9])?$"
         subnetName:
           title: Subnet name
           type: string
-          default: platform-subnet
           pattern: "^[a-z]([-a-z0-9]*[a-z0-9])?$"
         subnetCidr:
           title: Subnet CIDR range
           type: string
-          default: 10.20.0.0/24
         sourceCidr:
           title: Allowed source CIDR for SSH/HTTP
           type: string
-          default: 0.0.0.0/0
 
   steps:
     - id: fetch-template

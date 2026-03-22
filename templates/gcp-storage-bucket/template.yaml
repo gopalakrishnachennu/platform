@@ -21,11 +21,9 @@ spec:
         repoOwner:
           title: GitHub owner
           type: string
-          default: gopalakrishnachennu
         repoName:
           title: GitHub repository
           type: string
-          default: platform
     - title: Bucket configuration
       required:
         - gcpProjectId
@@ -35,7 +33,6 @@ spec:
         gcpProjectId:
           title: GCP project ID
           type: string
-          default: chennu-platform
         bucketName:
           title: Cloud Storage bucket name
           type: string
@@ -43,7 +40,6 @@ spec:
         gcpRegion:
           title: GCP region
           type: string
-          default: us-central1
         enableVersioning:
           title: Enable versioning
           type: boolean

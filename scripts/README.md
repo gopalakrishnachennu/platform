@@ -1,5 +1,3 @@
-# Scripts removed
+# Deprecated
 
-Bootstrap was **local-shell based** and is intentionally removed.
-
-Use **`docs/OPERATIONS.md`** (Google **Cloud Shell** + Helm) and **GitHub Actions** for all automation.
+Bootstrap was removed. Use `docs/ARCHITECTURE.md` and cloud tooling.
