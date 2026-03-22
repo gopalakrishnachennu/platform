@@ -6,12 +6,13 @@ backstage:
   appConfig:
     app:
       title: Platform Backstage
-      baseUrl: http://localhost:7007
+      # Set to your Ingress / LB URL (cloud). Do not use localhost in production.
+      baseUrl: https://backstage.CHANGE_ME.example.com
 
     backend:
-      baseUrl: http://localhost:7007
+      baseUrl: https://backstage.CHANGE_ME.example.com
       cors:
-        origin: http://localhost:7007
+        origin: https://backstage.CHANGE_ME.example.com
         methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
         credentials: true
       auth:
