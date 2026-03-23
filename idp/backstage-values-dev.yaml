@@ -1,15 +1,31 @@
+# =============================================================================
+# Helm values — Backstage (reference for helm upgrade -n idp)
+# -----------------------------------------------------------------------------
+# Purpose:    Configure Backstage URLs, catalog, GitHub integration, auth (dev defaults).
+# Install:    helm upgrade --install backstage backstage/backstage -n idp -f idp/backstage-values-dev.yaml
+# Required:   Non-empty baseUrl/backend.baseUrl/cors.origin for production; catalog.locations.
+# URLs:       Using localhost:7007 for port-forward. For LoadBalancer, change all three
+#             URL fields to http://<EXTERNAL_IP>:7007.
+# =============================================================================
 backstage:
   image:
     tag: "1.36.1"
 
+  # -- Inject GITHUB_TOKEN from K8s Secret into the Backstage pod.
+  # -- Create the secret first:
+  # --   kubectl -n idp create secret generic backstage-github-token \
+  # --     --from-literal=GITHUB_TOKEN=ghp_XXXXX
+  extraEnvVarsSecrets:
+    - backstage-github-token
+
   appConfig:
     app:
       title: Platform Backstage
-      baseUrl: ""
+      baseUrl: http://localhost:7007
     backend:
-      baseUrl: ""
+      baseUrl: http://localhost:7007
       cors:
-        origin: ""
+        origin: http://localhost:7007
         methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
         credentials: true
       auth:
@@ -31,7 +47,25 @@ backstage:
       publisher:
         type: local
     catalog:
-      locations: []
+      # -- Global rules: allow these kinds from ANY catalog location.
+      # -- Without this, Backstage may reject entities with NotAllowedError.
+      rules:
+        - allow:
+            - Template
+            - Location
+            - Component
+            - System
+            - API
+            - Resource
+            - Group
+            - User
+      locations:
+        - type: url
+          target: https://raw.githubusercontent.com/gopalakrishnachennu/platform/main/templates/all.yaml
+          rules:
+            - allow:
+                - Template
+                - Location
     integrations:
       github:
         - host: github.com
