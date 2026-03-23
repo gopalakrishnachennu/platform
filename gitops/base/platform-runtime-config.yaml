@@ -1,4 +1,10 @@
 # GENERATED — do not edit by hand. CI overwrites from Terraform outputs on every infra run.
+# =============================================================================
+# ConfigMap — platform-runtime-config
+# -----------------------------------------------------------------------------
+# Purpose:    Key/value strings for app env (Terraform outputs: buckets, VPC, subnet).
+# Writer:     .github/workflows/infra-terraform.yml (terraform output collection).
+# =============================================================================
 apiVersion: v1
 kind: ConfigMap
 metadata:

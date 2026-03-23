@@ -1,3 +1,12 @@
+# =============================================================================
+# WORKFLOW: Infra Terraform
+# -----------------------------------------------------------------------------
+# Purpose:    PR — terraform plan for changed infra/*. Push to main — apply, regenerate
+#             gitops ConfigMaps + argocd/dev-app.yaml info from TF outputs, commit, Argo sync job.
+# Triggers:   paths infra/** (PR, push main), workflow_dispatch.
+# Secrets:    GCP_CREDENTIALS (GCS state, Terraform, GKE kubectl, git push).
+# State:      env.TF_STATE_BUCKET (GCS prefix per stack directory).
+# =============================================================================
 name: Infra Terraform
 
 on:
@@ -19,6 +28,9 @@ env:
   GKE_ZONE: us-central1-a
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # Job: plan — Terraform init/validate/plan for dirs changed in the PR (infra/** only).
+  # ---------------------------------------------------------------------------
   plan:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -68,6 +80,9 @@ jobs:
             terraform -chdir="${dir}" plan -input=false -no-color
           done
 
+  # ---------------------------------------------------------------------------
+  # Job: apply — Terraform apply on main; rewrite GitOps YAML from outputs; commit; then argocd-sync.
+  # ---------------------------------------------------------------------------
   apply:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -242,6 +257,9 @@ EOF
           git commit -m "chore: sync infra outputs to gitops (runtime config + Argo bucket visibility)"
           git push
 
+  # ---------------------------------------------------------------------------
+  # Job: argocd-sync — After apply (and bot commit), pull main, kubectl apply Application, hard refresh.
+  # ---------------------------------------------------------------------------
   # Immediately sync Argo CD with Git after Terraform/GitOps commits — no second manual workflow.
   argocd-sync:
     needs: apply

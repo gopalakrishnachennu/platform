@@ -1,3 +1,11 @@
+# =============================================================================
+# Argo CD Application — platform-api-dev
+# -----------------------------------------------------------------------------
+# Purpose:    Declares GitOps sync from this repo path → GKE namespace `dev`.
+#             Argo reconciles cluster state to match gitops/overlays/dev on main.
+# Prereq:     Set spec.source.repoURL to your fork/clone before kubectl apply.
+# Note:       spec.info entries are updated by infra-terraform.yml from TF outputs.
+# =============================================================================
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

@@ -1,3 +1,9 @@
+# =============================================================================
+# Deployment — platform-api
+# -----------------------------------------------------------------------------
+# Purpose:    Runs the sample platform-api container (image tag updated by CI).
+# Env:        Injects ConfigMap platform-runtime-config (Terraform outputs / placeholders).
+# =============================================================================
 apiVersion: apps/v1
 kind: Deployment
 metadata:

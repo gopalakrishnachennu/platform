@@ -1,3 +1,10 @@
+# =============================================================================
+# Terraform — GCS bucket (scaffolded by Backstage template)
+# -----------------------------------------------------------------------------
+# Purpose:    Create one google_storage_bucket; output bucket_name for CI/GitOps.
+# State:      GCS backend (prefix = directory path); CI sets bucket in workflow.
+# Values:     Injected by Backstage fetch:template (cookiecutter-style placeholders).
+# =============================================================================
 terraform {
   required_version = ">= 1.4.0"
   backend "gcs" {}

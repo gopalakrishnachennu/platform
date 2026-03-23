@@ -1,3 +1,9 @@
+# =============================================================================
+# Terraform — VPC + subnet + firewall (scaffolded by Backstage template)
+# -----------------------------------------------------------------------------
+# Purpose:    Create VPC network, subnet, and baseline firewall rules in GCP.
+# Outputs:    vpc_name, subnet_name — consumed by infra-terraform.yml for Argo info.
+# =============================================================================
 terraform {
   required_version = ">= 1.4.0"
   backend "gcs" {}

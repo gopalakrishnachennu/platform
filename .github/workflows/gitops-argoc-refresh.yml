@@ -1,3 +1,10 @@
+# =============================================================================
+# WORKFLOW: GitOps — apply Argo app + hard refresh
+# -----------------------------------------------------------------------------
+# Purpose:    When gitops/** or argocd/** changes on main, apply Application CR and
+#             force Argo to reconcile from Git (no manual kubectl).
+# Secrets:    GCP_CREDENTIALS (gcloud get-credentials + kubectl to GKE).
+# =============================================================================
 # After GitOps / Argo app YAML changes land on main, update the cluster without manual kubectl.
 # Requires secrets.GCP_CREDENTIALS with permission to: gcloud container clusters get-credentials + kubectl.
 name: GitOps — apply Argo app + hard refresh
@@ -17,6 +24,9 @@ env:
   GKE_ZONE: us-central1-a
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # Job: sync-argocd — kubectl apply argocd/dev-app.yaml + patch refresh annotation.
+  # ---------------------------------------------------------------------------
   sync-argocd:
     runs-on: ubuntu-latest
     permissions:

@@ -1,3 +1,9 @@
+# =============================================================================
+# Kustomize overlay — gitops/overlays/dev
+# -----------------------------------------------------------------------------
+# Purpose:    Namespace `dev` + patches for the platform-api Deployment.
+# Synced by:  Argo CD Application (argocd/dev-app.yaml) path: gitops/overlays/dev
+# =============================================================================
 namespace: dev
 
 resources:

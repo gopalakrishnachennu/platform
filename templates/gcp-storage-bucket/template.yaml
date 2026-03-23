@@ -1,3 +1,9 @@
+# =============================================================================
+# Backstage Software Template — GCS bucket (Terraform)
+# -----------------------------------------------------------------------------
+# Purpose:    Scaffolds infra/gcp-storage/<bucket>/ and opens a GitHub PR for review.
+# Pipeline:   Merge → .github/workflows/infra-terraform.yml applies Terraform + updates GitOps.
+# =============================================================================
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:

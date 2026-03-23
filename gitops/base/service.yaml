@@ -1,3 +1,9 @@
+# =============================================================================
+# Service — platform-api
+# -----------------------------------------------------------------------------
+# Purpose:    In-cluster HTTP (port 80) → container port 8080 for platform-api pods.
+# Access:     ClusterIP (use kubectl port-forward or add Ingress/LB for external).
+# =============================================================================
 apiVersion: v1
 kind: Service
 metadata:

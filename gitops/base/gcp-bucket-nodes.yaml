@@ -1,5 +1,11 @@
 # GENERATED — do not edit by hand. github-actions[bot] overwrites this on every infra pipeline run.
 # Source of truth: infra/gcp-storage/*/ (Terraform). Argo CD syncs whatever is committed here.
+# =============================================================================
+# ConfigMap(s) — GCS bucket visibility in Argo tree
+# -----------------------------------------------------------------------------
+# Purpose:    One or more ConfigMaps so bucket names appear as Kubernetes objects in Argo CD.
+# Writer:     .github/workflows/infra-terraform.yml
+# =============================================================================
 ---
 apiVersion: v1
 kind: ConfigMap

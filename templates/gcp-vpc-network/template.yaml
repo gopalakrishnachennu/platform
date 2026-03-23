@@ -1,3 +1,9 @@
+# =============================================================================
+# Backstage Software Template — VPC + subnet + firewall (Terraform)
+# -----------------------------------------------------------------------------
+# Purpose:    Scaffolds infra/gcp-vpc/<network>/ and opens a GitHub PR for review.
+# Pipeline:   Merge → infra-terraform.yml applies + surfaces VPC/subnet in GitOps / Argo info.
+# =============================================================================
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:

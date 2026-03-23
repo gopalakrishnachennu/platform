@@ -4,6 +4,8 @@ Internal platform on **GCP** and **GitHub**: **Backstage** provisions via Terraf
 
 **Architecture:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
+**Comment style (headers in YAML/Docker/Terraform):** [`docs/CODE_COMMENT_STYLE.md`](docs/CODE_COMMENT_STYLE.md)
+
 **Backstage:** [`idp/README.md`](idp/README.md) · [`templates/README.md`](templates/README.md)
 
 | Path | Role |
