@@ -1,8 +1,10 @@
 # =============================================================================
 # Backstage Location — template catalog registration
 # -----------------------------------------------------------------------------
-# Purpose:    Lists raw Git URLs of template.yaml files for Backstage catalog.
+# Purpose:    Lists GitHub URLs of template.yaml files for Backstage catalog.
 # Operator:   Set spec.targets (and register this file in idp/backstage-values-dev.yaml).
+# Note:       Use github.com/blob/ URLs (not raw.githubusercontent.com) so the
+#             scaffolder's GitHub integration resolves correctly for fetch:template.
 # =============================================================================
 apiVersion: backstage.io/v1alpha1
 kind: Location
@@ -13,5 +15,5 @@ spec:
   rules:
     - allow: [Template]
   targets:
-    - https://raw.githubusercontent.com/gopalakrishnachennu/platform/main/templates/gcp-storage-bucket/template.yaml
-    - https://raw.githubusercontent.com/gopalakrishnachennu/platform/main/templates/gcp-vpc-network/template.yaml
+    - https://github.com/gopalakrishnachennu/platform/blob/main/templates/gcp-storage-bucket/template.yaml
+    - https://github.com/gopalakrishnachennu/platform/blob/main/templates/gcp-vpc-network/template.yaml

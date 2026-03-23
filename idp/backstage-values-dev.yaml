@@ -65,7 +65,7 @@ backstage:
             - User
       locations:
         - type: url
-          target: https://raw.githubusercontent.com/gopalakrishnachennu/platform/main/templates/all.yaml
+          target: https://github.com/gopalakrishnachennu/platform/blob/main/templates/all.yaml
           rules:
             - allow:
                 - Template
