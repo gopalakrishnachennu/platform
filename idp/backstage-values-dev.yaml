@@ -24,6 +24,10 @@ backstage:
       baseUrl: http://localhost:7007
     backend:
       baseUrl: http://localhost:7007
+      reading:
+        allow:
+          - host: raw.githubusercontent.com
+          - host: github.com
       cors:
         origin: http://localhost:7007
         methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
