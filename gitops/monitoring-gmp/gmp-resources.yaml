@@ -1,0 +1,155 @@
+# =============================================================================
+# Google Managed Prometheus — PodMonitoring + node exporter
+# -----------------------------------------------------------------------------
+# Prereq: cluster has managed_prometheus enabled; CRDs exist on the cluster.
+# Namespace monitoring: created by Terraform (infra/gke-monitoring/prometheus)
+# or by Argo syncOptions CreateNamespace=true.
+# =============================================================================
+
+---
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: namespace-pod-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/managed-by: platform
+spec:
+  selector:
+    matchLabels: {}
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+  targetLabels:
+    metadata:
+      - pod
+      - container
+      - namespace
+
+---
+apiVersion: monitoring.googleapis.com/v1
+kind: ClusterPodMonitoring
+metadata:
+  name: kube-system-metrics
+  labels:
+    app.kubernetes.io/managed-by: platform
+spec:
+  selector:
+    matchLabels: {}
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+  targetLabels:
+    metadata:
+      - pod
+      - container
+      - namespace
+
+---
+apiVersion: monitoring.googleapis.com/v1
+kind: ClusterPodMonitoring
+metadata:
+  name: annotated-pod-metrics
+  labels:
+    app.kubernetes.io/managed-by: platform
+spec:
+  selector:
+    matchLabels: {}
+  endpoints:
+    - port: http-metrics
+      interval: 30s
+      path: /metrics
+    - port: metrics
+      interval: 30s
+      path: /metrics
+  targetLabels:
+    metadata:
+      - pod
+      - container
+      - namespace
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: prometheus-node-exporter
+  namespace: monitoring
+  labels:
+    app: prometheus-node-exporter
+    app.kubernetes.io/managed-by: platform
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-node-exporter
+  template:
+    metadata:
+      labels:
+        app: prometheus-node-exporter
+    spec:
+      hostPID: true
+      hostNetwork: true
+      containers:
+        - name: node-exporter
+          image: prom/node-exporter:v1.7.0
+          args:
+            - --path.procfs=/host/proc
+            - --path.sysfs=/host/sys
+            - --path.rootfs=/host/root
+            - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
+          ports:
+            - name: metrics
+              containerPort: 9100
+              hostPort: 9100
+          volumeMounts:
+            - name: proc
+              mountPath: /host/proc
+              readOnly: true
+            - name: sys
+              mountPath: /host/sys
+              readOnly: true
+            - name: root
+              mountPath: /host/root
+              readOnly: true
+              mountPropagation: HostToContainer
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      tolerations:
+        - operator: Exists
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: root
+          hostPath:
+            path: /
+
+---
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: node-exporter-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/managed-by: platform
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-node-exporter
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+  targetLabels:
+    metadata:
+      - pod
+      - node

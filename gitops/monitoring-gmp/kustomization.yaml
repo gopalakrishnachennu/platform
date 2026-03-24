@@ -1,0 +1,12 @@
+# =============================================================================
+# Kustomize — Google Managed Prometheus scrape config
+# -----------------------------------------------------------------------------
+# Synced by Argo CD (argocd/monitoring-gmp.yaml). When managed_prometheus is
+# enabled on the cluster (Terraform infra/gke-monitoring/prometheus), these
+# PodMonitoring / ClusterPodMonitoring objects define scrape targets; metrics
+# show up in Cloud Monitoring (Prometheus type) and Grafana Stackdriver datasource.
+# =============================================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - gmp-resources.yaml

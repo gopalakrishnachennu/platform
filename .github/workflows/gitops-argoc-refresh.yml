@@ -51,7 +51,7 @@ jobs:
             --project "${GCP_PROJECT_ID}"
 
       - name: Apply Application CR from Git (Info panel, spec changes)
-        run: kubectl apply -f argocd/dev-app.yaml
+        run: kubectl apply -f argocd/
 
       - name: Hard refresh platform-api-dev (fetch latest Git for this app)
         run: |

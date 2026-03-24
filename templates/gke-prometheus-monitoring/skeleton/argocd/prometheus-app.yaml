@@ -1,0 +1,49 @@
+# =============================================================================
+# Argo CD Application — kube-prometheus-stack
+# -----------------------------------------------------------------------------
+# Purpose:    Deploy Prometheus + Grafana into the cluster from Helm chart source.
+# Note:       Grafana Stackdriver datasource reads Cloud Monitoring (GCP) metrics.
+#             For Prometheus scrape → Cloud Monitoring, enable GMP (Terraform) + Argo app
+#             monitoring-gmp (gitops/monitoring-gmp), not this chart alone.
+# =============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${{ values.appName }}
+  namespace: gitops
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: ${{ values.chartVersion }}
+    helm:
+      values: |
+        fullnameOverride: prometheus-stack
+        grafana:
+          adminPassword: ${{ values.grafanaAdminPassword }}
+          service:
+            type: ClusterIP
+          additionalDataSources:
+            - name: Google Cloud Monitoring
+              type: stackdriver
+              access: proxy
+              editable: true
+              isDefault: false
+              jsonData:
+                authenticationType: gce
+                defaultProject: ${{ values.gcpProjectId }}
+        prometheus:
+          prometheusSpec:
+            retention: 7d
+            externalLabels:
+              gcp_project: ${{ values.gcpProjectId }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ${{ values.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

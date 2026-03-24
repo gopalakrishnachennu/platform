@@ -1,29 +1,25 @@
 # =============================================================================
-# Google Managed Prometheus — PodMonitoring & ClusterPodMonitoring CRDs
+# Google Managed Prometheus — optional PodMonitoring / node-exporter manifests
 # -----------------------------------------------------------------------------
-# Purpose:    Define what Prometheus scrapes on the GKE cluster.
-# Docs:       https://cloud.google.com/stackdriver/docs/managed-prometheus
-# Apply:      kubectl apply -f prometheus.yaml
+# Apply after GMP is enabled on the cluster (e.g. infra/gke-monitoring/prometheus).
+#   kubectl apply -f prometheus.yaml
+# Namespace "monitoring" must exist (Terraform stack creates it).
 # =============================================================================
 
 ---
-# ---------------------------------------------------------------------------
-# PodMonitoring: scrape any pod in the monitoring namespace with the
-# annotation prometheus.io/scrape: "true"
-# ---------------------------------------------------------------------------
 apiVersion: monitoring.googleapis.com/v1
 kind: PodMonitoring
 metadata:
   name: namespace-pod-metrics
-  namespace: ${{ values.monitoringNamespace }}
+  namespace: monitoring
   labels:
-    app.kubernetes.io/managed-by: backstage
+    app.kubernetes.io/managed-by: platform
 spec:
   selector:
-    matchLabels: {}       # matches ALL pods in the namespace
+    matchLabels: {}
   endpoints:
-    - port: metrics       # named port "metrics", or use targetPort below
-      interval: ${{ values.scrapeInterval }}
+    - port: metrics
+      interval: 30s
       path: /metrics
   targetLabels:
     metadata:
@@ -32,22 +28,18 @@ spec:
       - namespace
 
 ---
-# ---------------------------------------------------------------------------
-# ClusterPodMonitoring: scrape kube-system components (kubelet, kube-dns, etc.)
-# cluster-wide — no namespace restriction
-# ---------------------------------------------------------------------------
 apiVersion: monitoring.googleapis.com/v1
 kind: ClusterPodMonitoring
 metadata:
   name: kube-system-metrics
   labels:
-    app.kubernetes.io/managed-by: backstage
+    app.kubernetes.io/managed-by: platform
 spec:
   selector:
     matchLabels: {}
   endpoints:
     - port: metrics
-      interval: ${{ values.scrapeInterval }}
+      interval: 30s
       path: /metrics
   targetLabels:
     metadata:
@@ -56,25 +48,21 @@ spec:
       - namespace
 
 ---
-# ---------------------------------------------------------------------------
-# ClusterPodMonitoring: scrape pods annotated with prometheus.io/scrape=true
-# across ALL namespaces
-# ---------------------------------------------------------------------------
 apiVersion: monitoring.googleapis.com/v1
 kind: ClusterPodMonitoring
 metadata:
   name: annotated-pod-metrics
   labels:
-    app.kubernetes.io/managed-by: backstage
+    app.kubernetes.io/managed-by: platform
 spec:
   selector:
     matchLabels: {}
   endpoints:
     - port: http-metrics
-      interval: ${{ values.scrapeInterval }}
+      interval: 30s
       path: /metrics
     - port: metrics
-      interval: ${{ values.scrapeInterval }}
+      interval: 30s
       path: /metrics
   targetLabels:
     metadata:
@@ -82,19 +70,15 @@ spec:
       - container
       - namespace
 
-{% if values.enableNodeExporter %}
 ---
-# ---------------------------------------------------------------------------
-# Node-exporter DaemonSet — host-level metrics (CPU, memory, disk, network)
-# ---------------------------------------------------------------------------
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: prometheus-node-exporter
-  namespace: ${{ values.monitoringNamespace }}
+  namespace: monitoring
   labels:
     app: prometheus-node-exporter
-    app.kubernetes.io/managed-by: backstage
+    app.kubernetes.io/managed-by: platform
 spec:
   selector:
     matchLabels:
@@ -150,26 +134,22 @@ spec:
             path: /
 
 ---
-# ---------------------------------------------------------------------------
-# PodMonitoring: scrape node-exporter pods
-# ---------------------------------------------------------------------------
 apiVersion: monitoring.googleapis.com/v1
 kind: PodMonitoring
 metadata:
   name: node-exporter-metrics
-  namespace: ${{ values.monitoringNamespace }}
+  namespace: monitoring
   labels:
-    app.kubernetes.io/managed-by: backstage
+    app.kubernetes.io/managed-by: platform
 spec:
   selector:
     matchLabels:
       app: prometheus-node-exporter
   endpoints:
     - port: metrics
-      interval: ${{ values.scrapeInterval }}
+      interval: 30s
       path: /metrics
   targetLabels:
     metadata:
       - pod
       - node
-{% endif %}

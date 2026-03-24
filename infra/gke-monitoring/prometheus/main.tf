@@ -1,9 +1,10 @@
 # =============================================================================
-# Terraform — Enable Google Managed Prometheus on GKE (scaffolded by Backstage)
+# Terraform — Google Managed Prometheus on existing GKE (platform-lab)
 # -----------------------------------------------------------------------------
-# Purpose:    Enable GMP on an existing GKE cluster; create monitoring namespace.
-# State:      GCS backend (prefix = directory path); CI sets bucket in workflow.
-# Values:     Injected by Backstage fetch:template (cookiecutter-style placeholders).
+# CI:         infra-terraform.yml — prefix infra/gke-monitoring/prometheus
+# Cluster:    Must match .github/workflows/infra-terraform.yml (GKE_CLUSTER / GKE_ZONE).
+# IAM:        See workflow header — GCP_CREDENTIALS SA needs GKE read + cluster update
+#             + ability to create namespaces via Kubernetes API.
 # =============================================================================
 terraform {
   required_version = ">= 1.4.0"
@@ -25,12 +26,10 @@ provider "google" {
   region  = "us-central1"
 }
 
-# ---------------------------------------------------------------------------
-# Data: look up the existing GKE cluster
-# ---------------------------------------------------------------------------
+# Zonal cluster: location MUST be the zone (not the region alone).
 data "google_container_cluster" "this" {
-  name     = "prometheus"
-  location = "us-central1"
+  name     = "platform-lab"
+  location = "us-central1-a"
   project  = "chennu-platform"
 }
 
@@ -42,15 +41,11 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.google_container_cluster.this.master_auth[0].cluster_ca_certificate)
 }
 
-# ---------------------------------------------------------------------------
-# Enable Google Managed Prometheus on the GKE cluster
-# ---------------------------------------------------------------------------
 resource "google_container_cluster" "monitoring_update" {
   name     = data.google_container_cluster.this.name
   location = data.google_container_cluster.this.location
   project  = "chennu-platform"
 
-  # Preserve existing config — only update monitoring
   monitoring_config {
     enable_components = ["SYSTEM_COMPONENTS"]
 
@@ -59,7 +54,6 @@ resource "google_container_cluster" "monitoring_update" {
     }
   }
 
-  # Prevent Terraform from trying to recreate the cluster
   lifecycle {
     ignore_changes = [
       node_config,
@@ -72,22 +66,16 @@ resource "google_container_cluster" "monitoring_update" {
   }
 }
 
-# ---------------------------------------------------------------------------
-# Create monitoring namespace
-# ---------------------------------------------------------------------------
 resource "kubernetes_namespace" "monitoring" {
   metadata {
     name = "monitoring"
     labels = {
-      "app.kubernetes.io/managed-by" = "backstage"
+      "app.kubernetes.io/managed-by" = "terraform"
       "purpose"                      = "prometheus-monitoring"
     }
   }
 }
 
-# ---------------------------------------------------------------------------
-# Outputs
-# ---------------------------------------------------------------------------
 output "cluster_name" {
   value = data.google_container_cluster.this.name
 }

@@ -5,6 +5,13 @@
 #             gitops ConfigMaps + argocd/dev-app.yaml info from TF outputs, commit, Argo sync job.
 # Triggers:   paths infra/** (PR, push main), workflow_dispatch.
 # Secrets:    GCP_CREDENTIALS (GCS state, Terraform, GKE kubectl, git push).
+#
+# IAM (project chennu-platform, SA in GCP_CREDENTIALS):
+#   • terraform plan (data google_container_cluster): roles/container.clusterViewer
+#   • terraform apply (cluster monitoring_config): roles/container.clusterAdmin — or a role
+#     that includes container.clusters.update
+#   • kubernetes_* resources: same SA must authenticate to the cluster API (typically
+#     roles/container.developer plus default GCP RBAC / GKE IAM access)
 # State:      env.TF_STATE_BUCKET (GCS prefix per stack directory).
 # =============================================================================
 name: Infra Terraform
@@ -294,7 +301,7 @@ EOF
             --project "${GCP_PROJECT_ID}"
 
       - name: Apply Application CR from Git (Info panel)
-        run: kubectl apply -f argocd/dev-app.yaml
+        run: kubectl apply -f argocd/
 
       - name: Hard refresh platform-api-dev (sync tree to latest Git)
         run: |
