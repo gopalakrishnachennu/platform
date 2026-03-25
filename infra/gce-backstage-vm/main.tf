@@ -1,7 +1,7 @@
 # =============================================================================
 # Terraform — Backstage on Compute Engine (VM)
 # -----------------------------------------------------------------------------
-# Goal:   Provision a GCE VM and run Backstage on port 7007 via Docker.
+# Goal:   Provision a GCE VM and run Backstage on port 7007 (no Docker).
 # CI:     .github/workflows/infra-terraform.yml will plan/apply this directory.
 # Notes:  - This is a simple VM-based deployment (no HTTPS, no DB) intended for demos.
 #         - For production, run Backstage on GKE with TLS + Postgres + secret manager.
@@ -33,13 +33,45 @@ locals {
 
     export DEBIAN_FRONTEND=noninteractive
     apt-get update -y
-    apt-get install -y docker.io
-    systemctl enable --now docker
+    apt-get install -y curl ca-certificates git python3 build-essential gnupg
 
-    # Ensure the container is always running
-    docker rm -f backstage >/dev/null 2>&1 || true
-    docker pull ${var.backstage_image}
-    docker run -d --restart=always --name backstage -p 7007:7007 ${var.backstage_image}
+    # Node.js 20 + Corepack (Yarn)
+    install -d /etc/apt/keyrings
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" > /etc/apt/sources.list.d/nodesource.list
+    apt-get update -y
+    apt-get install -y nodejs
+    corepack enable
+
+    APP_DIR=/opt/backstage
+    if [ ! -d "$${APP_DIR}" ]; then
+      cd /opt
+      npx --yes @backstage/create-app@latest --path backstage --skip-install
+      cd "$${APP_DIR}"
+      yarn install --immutable || yarn install
+      yarn build:backend
+    fi
+
+    cat >/etc/systemd/system/backstage.service <<'UNIT'
+    [Unit]
+    Description=Backstage (Node)
+    After=network-online.target
+    Wants=network-online.target
+
+    [Service]
+    Type=simple
+    WorkingDirectory=/opt/backstage
+    Environment=NODE_ENV=production
+    ExecStart=/usr/bin/yarn start --config app-config.yaml --config app-config.production.yaml
+    Restart=always
+    RestartSec=5
+
+    [Install]
+    WantedBy=multi-user.target
+UNIT
+
+    systemctl daemon-reload
+    systemctl enable --now backstage
   EOT
 }
 

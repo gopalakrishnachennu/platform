@@ -50,12 +50,6 @@ variable "boot_disk_gb" {
   default     = 50
 }
 
-variable "backstage_image" {
-  type        = string
-  description = "Backstage container image."
-  default     = "ghcr.io/backstage/backstage:latest"
-}
-
 variable "source_ranges" {
   type        = list(string)
   description = "CIDR ranges allowed to access Backstage on port 7007."
